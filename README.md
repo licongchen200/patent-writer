@@ -26,8 +26,13 @@ An AI-powered patent application generation system using CrewAI that creates com
 2. **Serper API Key** (for web search)
    - Sign up at: https://serper.dev
    - Free tier: 2,500 searches/month
-3. **OpenAI API Key** (or other LLM provider)
-   - CrewAI supports OpenAI, Anthropic, Ollama, etc.
+3. **LLM Access** - One of the following:
+   - **Internal LLM Proxy** (Comcast k8s) - Default, no API key needed
+     - URL: `http://llm-proxy.ceui.cnap.comcast.net`
+   - **OpenAI API** - For external use
+     - Get key at: https://platform.openai.com/api-keys
+   - **Anthropic Claude** - Alternative LLM
+   - **Local Ollama** - For offline use
 
 ## 🚀 Installation
 
@@ -46,12 +51,22 @@ pip install -r requirements.txt
 # Create .env file
 cp .env.example .env
 
-# Edit .env with your API keys
+# Edit .env with your Serper API key
+# For internal use, LLM proxy is already configured!
 export SERPER_API_KEY="your-serper-api-key"
-export OPENAI_API_KEY="your-openai-api-key"
+
+# The system uses internal llm-proxy by default:
+# OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net
+# OPENAI_API_KEY=dummy-key-not-needed
 ```
 
 ## 📖 Usage
+
+### Test LLM Connection (Optional)
+```bash
+# Verify internal LLM proxy is accessible
+python test_llm_proxy.py
+```
 
 ### Run the Patent Writer
 ```bash
@@ -123,21 +138,30 @@ result = run_patent_generation(
 )
 ```
 
-### Customize Agents
-Modify agent backstories, tools, or roles in the script to suit your needs.
+### Switch LLM Providers
 
-### Change LLM Provider
-CrewAI supports multiple LLM providers. Set environment variables:
-
+**Using Internal LLM Proxy (Default):**
 ```bash
-# For OpenAI (default)
-export OPENAI_API_KEY="sk-..."
+export OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net"
+export OPENAI_API_KEY="dummy-key-not-needed"
+```
 
-# For Anthropic
-export ANTHROPIC_API_KEY="sk-ant-..."
+**Using External OpenAI:**
+```bash
+export OPENAI_API_BASE="https://api.openai.com/v1"
+export OPENAI_API_KEY="sk-your-real-key"
+export OPENAI_MODEL_NAME="gpt-4"
+```
 
-# For Ollama (local)
+**Using Anthropic Claude:**
+```bash
+export ANTHROPIC_API_KEY="sk-ant-your-key"
+```
+
+**Using Local Ollama:**
+```bash
 export OPENAI_API_BASE="http://localhost:11434"
+export OPENAI_MODEL_NAME="llama2"
 ```
 
 ## ⚠️ Important Disclaimers

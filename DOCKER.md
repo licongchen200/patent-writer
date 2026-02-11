@@ -4,7 +4,7 @@
 - Docker installed ([Download Docker Desktop](https://www.docker.com/products/docker-desktop))
 - API Keys:
   - **Serper API** (free): https://serper.dev
-  - **OpenAI API**: https://platform.openai.com/api-keys
+  - **LLM**: Internal llm-proxy (default, no key needed) or OpenAI API
 
 ## 🚀 Quick Start (30 seconds)
 
@@ -13,7 +13,8 @@
 # Copy the example file
 cp .env.example .env
 
-# Edit .env and add your API keys
+# Edit .env and add your Serper API key
+# LLM proxy is already configured for internal use!
 # Use any text editor:
 nano .env
 # or
@@ -34,10 +35,11 @@ docker-compose up
 # Build the image
 docker build -t patent-writer .
 
-# Run with environment variables
+# Run with environment variables (using internal LLM proxy)
 docker run -it \
   -e SERPER_API_KEY="your-serper-key" \
-  -e OPENAI_API_KEY="your-openai-key" \
+  -e OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net" \
+  -e OPENAI_API_KEY="dummy-key-not-needed" \
   -v $(pwd)/output:/app/output \
   patent-writer
 ```
@@ -91,11 +93,15 @@ Edit `.env` file to configure:
 ```bash
 # Required
 SERPER_API_KEY=your-key-here
-OPENAI_API_KEY=your-key-here
 
-# Optional
-OPENAI_MODEL_NAME=gpt-4  # or gpt-3.5-turbo for faster/cheaper
-ANTHROPIC_API_KEY=your-key-here  # if using Claude
+# Internal LLM Proxy (default, already set)
+OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net
+OPENAI_API_KEY=dummy-key-not-needed
+
+# Optional: Override to use external OpenAI instead
+# OPENAI_API_BASE=https://api.openai.com/v1
+# OPENAI_API_KEY=your-real-openai-key
+# OPENAI_MODEL_NAME=gpt-4
 ```
 
 ## 🐛 Troubleshooting

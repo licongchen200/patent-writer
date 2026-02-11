@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy application file
 COPY main.py .
+COPY test_llm_proxy.py .
 
 # Create output directory
 RUN mkdir -p /app/output

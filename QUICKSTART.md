@@ -10,20 +10,23 @@ pip install -r requirements.txt
 ### Step 2: Get API Keys (2 min)
 1. **Serper API** (free): https://serper.dev
    - Sign up → Get API key
-2. **OpenAI API**: https://platform.openai.com/api-keys
-   - Create account → Generate key
+2. **LLM Access**:
+   - **Default**: Internal LLM Proxy (already configured, no key needed)
+   - **Alternative**: OpenAI API: https://platform.openai.com/api-keys
 
 ### Step 3: Configure Environment (1 min)
 ```bash
 # Option A: Create .env file
 cat > .env << EOF
 SERPER_API_KEY=your-serper-key-here
-OPENAI_API_KEY=your-openai-key-here
+OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net
+OPENAI_API_KEY=dummy-key-not-needed
 EOF
 
 # Option B: Export directly (temporary)
 export SERPER_API_KEY="your-serper-key-here"
-export OPENAI_API_KEY="your-openai-key-here"
+export OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net"
+export OPENAI_API_KEY="dummy-key-not-needed"
 ```
 
 ### Step 4: Run the System (1 min)
@@ -100,8 +103,9 @@ Be specific about:
 
 ### Cost Estimates (per iteration)
 - **Serper searches**: Free (up to 2,500/month)
-- **OpenAI GPT-3.5**: ~$0.50-$1.00
-- **OpenAI GPT-4**: ~$3.00-$5.00
+- **Internal LLM Proxy**: Free (using Comcast infrastructure)
+- **External OpenAI GPT-3.5**: ~$0.50-$1.00 (if not using internal proxy)
+- **External OpenAI GPT-4**: ~$3.00-$5.00 (if not using internal proxy)
 - **Local Ollama**: Free
 
 ---

@@ -9,10 +9,12 @@ services:
     environment:
       # API Keys - Set these in your .env file
       - SERPER_API_KEY=${SERPER_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      # Optional: Use different LLM providers
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      # Internal LLM Proxy (Comcast k8s)
+      - OPENAI_API_BASE=${OPENAI_API_BASE:-http://llm-proxy.ceui.cnap.comcast.net}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key-not-needed}
+      # Optional: Use different LLM providers or models
       - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-gpt-4}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
     volumes:
       # Mount output directory to persist generated files
       - ./output:/app/output
