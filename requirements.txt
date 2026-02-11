@@ -1,0 +1,20 @@
+# CrewAI Patent Writing System Requirements
+
+# Core CrewAI Framework
+crewai>=0.28.0
+crewai-tools>=0.2.0
+
+# Document Generation
+python-docx>=1.0.0
+
+# Web Search & Scraping (required for SerperDevTool)
+# Note: Set SERPER_API_KEY environment variable
+# Get free API key at: https://serper.dev
+
+# Optional but recommended
+python-dotenv>=1.0.0  # For managing environment variables
+
+# Standard libraries (usually pre-installed)
+# - json (built-in)
+# - os (built-in)
+# - datetime (built-in)
