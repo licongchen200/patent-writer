@@ -19,13 +19,13 @@ pip install -r requirements.txt
 # Option A: Create .env file
 cat > .env << EOF
 SERPER_API_KEY=your-serper-key-here
-OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net
+OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net/v1
 OPENAI_API_KEY=dummy-key-not-needed
 EOF
 
 # Option B: Export directly (temporary)
 export SERPER_API_KEY="your-serper-key-here"
-export OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net"
+export OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net/v1"
 export OPENAI_API_KEY="dummy-key-not-needed"
 ```
 

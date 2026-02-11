@@ -10,7 +10,7 @@ services:
       # API Keys - Set these in your .env file
       - SERPER_API_KEY=${SERPER_API_KEY}
       # Internal LLM Proxy (Comcast k8s)
-      - OPENAI_API_BASE=${OPENAI_API_BASE:-http://llm-proxy.ceui.cnap.comcast.net}
+      - OPENAI_API_BASE=${OPENAI_API_BASE:-http://llm-proxy.ceui.cnap.comcast.net/v1}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key-not-needed}
       # Optional: Use different LLM providers or models
       - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-gpt-4}

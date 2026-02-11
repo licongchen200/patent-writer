@@ -12,7 +12,7 @@ def test_llm_connection():
     print("=" * 60)
     
     # Check environment variables
-    api_base = os.getenv("OPENAI_API_BASE", "http://llm-proxy.ceui.cnap.comcast.net")
+    api_base = os.getenv("OPENAI_API_BASE", "http://llm-proxy.ceui.cnap.comcast.net/v1")
     api_key = os.getenv("OPENAI_API_KEY", "dummy-key-not-needed")
     
     print(f"\nAPI Base URL: {api_base}")
@@ -32,7 +32,7 @@ def test_llm_connection():
         
         # Test with a simple prompt
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",  # Using gpt-4o model
             messages=[
                 {"role": "user", "content": "Hello! Please respond with 'LLM proxy is working!' if you receive this."}
             ],

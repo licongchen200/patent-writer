@@ -28,7 +28,7 @@ An AI-powered patent application generation system using CrewAI that creates com
    - Free tier: 2,500 searches/month
 3. **LLM Access** - One of the following:
    - **Internal LLM Proxy** (Comcast k8s) - Default, no API key needed
-     - URL: `http://llm-proxy.ceui.cnap.comcast.net`
+     - URL: `http://llm-proxy.ceui.cnap.comcast.net/v1`
    - **OpenAI API** - For external use
      - Get key at: https://platform.openai.com/api-keys
    - **Anthropic Claude** - Alternative LLM
@@ -56,7 +56,7 @@ cp .env.example .env
 export SERPER_API_KEY="your-serper-api-key"
 
 # The system uses internal llm-proxy by default:
-# OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net
+# OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net/v1
 # OPENAI_API_KEY=dummy-key-not-needed
 ```
 
@@ -142,7 +142,7 @@ result = run_patent_generation(
 
 **Using Internal LLM Proxy (Default):**
 ```bash
-export OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net"
+export OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net/v1"
 export OPENAI_API_KEY="dummy-key-not-needed"
 ```
 

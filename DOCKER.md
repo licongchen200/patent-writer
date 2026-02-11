@@ -38,7 +38,7 @@ docker build -t patent-writer .
 # Run with environment variables (using internal LLM proxy)
 docker run -it \
   -e SERPER_API_KEY="your-serper-key" \
-  -e OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net" \
+  -e OPENAI_API_BASE="http://llm-proxy.ceui.cnap.comcast.net/v1" \
   -e OPENAI_API_KEY="dummy-key-not-needed" \
   -v $(pwd)/output:/app/output \
   patent-writer
@@ -95,7 +95,7 @@ Edit `.env` file to configure:
 SERPER_API_KEY=your-key-here
 
 # Internal LLM Proxy (default, already set)
-OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net
+OPENAI_API_BASE=http://llm-proxy.ceui.cnap.comcast.net/v1
 OPENAI_API_KEY=dummy-key-not-needed
 
 # Optional: Override to use external OpenAI instead
