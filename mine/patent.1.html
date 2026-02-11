@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patent Application - Proactive Session Error Monitoring System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.8;
+            color: #000;
+            background: #fff;
+            padding: 40px;
+            max-width: 8.5in;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px double #000;
+        }
+
+        .header h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .header .subtitle {
+            font-size: 12pt;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .subsection-title {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            text-indent: 0.5in;
+        }
+
+        .no-indent {
+            text-indent: 0;
+        }
+
+        .claim {
+            margin-bottom: 20px;
+            padding-left: 0.5in;
+        }
+
+        .claim-number {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 1in;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .figure-ref {
+            font-style: italic;
+        }
+
+        .definition {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #333;
+        }
+
+        .abstract {
+            background: #f9f9f9;
+            padding: 20px;
+            margin: 30px 0;
+            border: 2px solid #000;
+        }
+
+        .abstract-title {
+            font-weight: bold;
+            font-size: 12pt;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .field-value {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .field-label {
+            font-weight: bold;
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .field-content {
+            flex-grow: 1;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #000;
+            text-align: center;
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                padding: 0.5in;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Patent Application</h1>
+        <div class="subtitle">System and Method for Proactive Error Detection and User Notification Using Object Storage-Based Session Status Monitoring</div>
+        <div style="margin-top: 20px; font-size: 10pt;">
+            <div class="field-value">
+                <div class="field-label">Application Type:</div>
+                <div class="field-content">Utility Patent</div>
+            </div>
+            <div class="field-value">
+                <div class="field-label">Technology Field:</div>
+                <div class="field-content">Computer Systems, Software Monitoring, Error Detection, User Interface</div>
+            </div>
+            <div class="field-value">
+                <div class="field-label">Filing Date:</div>
+                <div class="field-content">[To be determined]</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="abstract">
+        <div class="abstract-title">ABSTRACT</div>
+        <p class="no-indent">
+            A system and method for proactive error detection and user notification in web-based applications utilizing object storage for lightweight, scalable session status monitoring. The system decouples error monitoring from application backend infrastructure by employing a logging pipeline that captures critical errors and writes session-specific status files to object storage (e.g., Minio). A client-side JavaScript library periodically polls these status files from object storage, evaluating error presence and severity. Upon detecting errors that meet predefined thresholds, the system automatically presents a user interface element to request error reporting or session recording, without requiring user-initiated action. This architecture achieves minimal performance impact on application backends while maintaining high scalability and rapid error detection, addressing limitations of traditional API-based polling and real-time connection approaches.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">1. Field of the Invention</div>
+        <p>
+            The present invention relates generally to computer systems and software application monitoring. More specifically, it relates to systems and methods for detecting errors in web-based applications and proactively notifying users of error conditions through an innovative object storage-based polling mechanism that minimizes backend infrastructure load while maintaining high responsiveness and scalability.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">2. Background of the Invention</div>
+        
+        <div class="subsection-title">2.1 Problem Statement</div>
+        <p>
+            Modern web applications face significant challenges in detecting and responding to error conditions, particularly critical errors affecting payment processing, authentication, and other essential user workflows. Traditional error detection approaches suffer from several limitations:
+        </p>
+        <ul>
+            <li><strong>API Polling Overhead:</strong> Conventional status checking via RESTful APIs creates substantial backend load, requiring database queries and business logic execution for each polling request. At scale, this approach becomes unsustainable.</li>
+            <li><strong>Real-Time Connection Costs:</strong> WebSocket and Server-Sent Events (SSE) implementations require persistent connections, consuming significant server resources and complicating scalability.</li>
+            <li><strong>Reactive Rather Than Proactive:</strong> Most error reporting systems depend on users manually reporting issues, resulting in delayed detection and resolution.</li>
+            <li><strong>Backend Coupling:</strong> Status checking systems tightly coupled to application backends create dependency issues where monitoring fails when the application itself experiences problems.</li>
+            <li><strong>Latency vs. Load Trade-off:</strong> Reducing polling intervals to improve responsiveness exponentially increases backend load, while increasing intervals degrades error detection speed.</li>
+        </ul>
+
+        <div class="subsection-title">2.2 Prior Art Limitations</div>
+        <p>
+            Existing error monitoring and user notification systems typically employ one or more of the following approaches:
+        </p>
+        <ul>
+            <li><strong>Application Performance Monitoring (APM) Systems:</strong> Solutions like New Relic, Datadog, and Sentry focus on server-side error aggregation and alerting to development teams, but lack proactive end-user notification mechanisms.</li>
+            <li><strong>Client-Side Error Tracking:</strong> Libraries like Bugsnag and Rollbar capture JavaScript errors but rely on passive collection without proactive user engagement for additional context.</li>
+            <li><strong>Traditional Health Check APIs:</strong> Endpoint-based health checking requires backend infrastructure to remain operational and creates circular dependency problems.</li>
+            <li><strong>Real-Time Notification Systems:</strong> Push notification and WebSocket-based systems require complex infrastructure and persistent connections that don't scale efficiently for status polling use cases.</li>
+        </ul>
+
+        <div class="subsection-title">2.3 Need for Innovation</div>
+        <p>
+            There exists a need for an error detection and user notification system that combines the benefits of proactive monitoring with minimal infrastructure overhead, operates independently of application backend availability, scales efficiently to support large user populations, and seamlessly integrates with existing logging and error tracking infrastructure without requiring application code modification.
+        </p>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section">
+        <div class="section-title">3. Summary of the Invention</div>
+        <p>
+            The present invention provides a novel system and method for proactive error detection and user notification utilizing object storage as a lightweight, scalable intermediary between error logging infrastructure and client-side monitoring. The invention comprises three primary components working in concert:
+        </p>
+
+        <div class="subsection-title">3.1 Core Components</div>
+        <ul>
+            <li><strong>Logging Pipeline Integration:</strong> A backend service that captures critical application errors from existing logging infrastructure, aggregates errors by user session identifier, and writes session-specific status files to object storage with automatic expiration policies.</li>
+            <li><strong>Client-Side Polling Library:</strong> A JavaScript library embedded in web applications that generates unique session identifiers, periodically fetches session-specific status files from object storage, evaluates error presence and severity, and triggers user interface notifications based on configurable thresholds.</li>
+            <li><strong>Object Storage Layer:</strong> A scalable object storage system (e.g., Minio, Amazon S3, Google Cloud Storage) configured with appropriate CORS policies, lifecycle management for automatic file cleanup, and read-optimized access patterns for high-performance status file retrieval.</li>
+        </ul>
+
+        <div class="subsection-title">3.2 Key Innovations</div>
+        <p>
+            The invention introduces several novel aspects:
+        </p>
+        <ol>
+            <li><strong>Decoupled Architecture:</strong> By utilizing object storage as an intermediary, the system eliminates direct dependencies between client-side monitoring and application backend infrastructure, allowing error detection to function even during backend failures.</li>
+            <li><strong>Write-Only-On-Error Pattern:</strong> Status files are created only when errors occur, with file absence (HTTP 404) indicating healthy operation. This inverts traditional polling logic and minimizes storage operations.</li>
+            <li><strong>Automatic Lifecycle Management:</strong> Time-to-live (TTL) policies on object storage automatically clean up session status files, eliminating manual maintenance and ensuring compliance with data retention policies.</li>
+            <li><strong>Threshold-Based Proactive Notification:</strong> The system evaluates error patterns and severity before triggering user notifications, preventing alert fatigue while ensuring critical issues receive immediate attention.</li>
+            <li><strong>Zero-Injection Implementation:</strong> The client-side library operates without modifying native browser APIs or application code, eliminating compatibility risks and security concerns associated with API interception.</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <div class="section-title">4. Detailed Description of the Invention</div>
+
+        <div class="subsection-title">4.1 System Architecture Overview</div>
+        <p>
+            The system architecture comprises five distinct operational phases: error capture, error aggregation, status file generation, client-side polling, and user notification. Each phase operates asynchronously and independently, enabling high throughput and fault tolerance.
+        </p>
+
+        <div class="subsection-title">4.2 Phase 1: Error Capture</div>
+        <p>
+            Application errors, particularly those affecting critical business functions such as payment processing, authentication, and data persistence, are captured by the application's existing logging infrastructure. The system identifies critical errors based on configurable criteria including HTTP status codes, endpoint patterns, error types, and business logic classifications. Each captured error includes contextual information: endpoint URL, timestamp, error type, HTTP status code, session identifier, and optionally encrypted error response bodies for sensitive data.
+        </p>
+
+        <div class="subsection-title">4.3 Phase 2: Error Aggregation and Processing</div>
+        <p>
+            A backend pipeline service subscribes to the logging infrastructure's error stream and performs session-based aggregation. The service maintains an in-memory or cache-based index of active sessions experiencing errors. When new errors arrive, the service updates the corresponding session's error collection. The aggregation logic implements deduplication to prevent redundant error entries, time-windowing to group related errors, severity classification based on error types and frequency, and error count tracking for threshold evaluation.
+        </p>
+
+        <div class="subsection-title">4.4 Phase 3: Status File Generation</div>
+        <p>
+            Upon receiving a critical error for a session, the pipeline service generates or updates a JSON-formatted status file specific to that session. The file naming convention follows the pattern: <code>session-{sessionId}-status.json</code>, where sessionId is a unique identifier generated by the client-side library. The status file contains structured data including session identifier, timestamp of last update, array of error objects with endpoint, status code, error type, timestamp, and optionally encrypted body, total error count, and severity classification (e.g., "critical", "warning", "info").
+        </p>
+
+        <div class="subsection-title">4.5 Phase 4: Object Storage Management</div>
+        <p>
+            Status files are written to a dedicated object storage bucket with specific configuration parameters. The bucket is configured with read-only access for client applications, write-only access for the logging pipeline service, CORS policies permitting cross-origin requests from application domains, and lifecycle policies automatically deleting files after a configurable TTL (e.g., 4-72 hours). This configuration ensures security, enables browser-based access, and prevents storage accumulation.
+        </p>
+
+        <div class="subsection-title">4.6 Phase 5: Client-Side Polling</div>
+        <p>
+            The JavaScript library embedded in the web application initiates periodic polling upon page load. The polling mechanism operates as follows:
+        </p>
+        <ol>
+            <li>Generate or retrieve session identifier from browser storage (localStorage or sessionStorage)</li>
+            <li>Construct object storage URL using session identifier: <code>https://storage.domain.com/session-status/session-{sessionId}-status.json</code></li>
+            <li>Execute HTTP GET request with cache-control headers to prevent stale data</li>
+            <li>Evaluate response:
+                <ul>
+                    <li>HTTP 404: No errors present, session healthy, continue polling at standard interval</li>
+                    <li>HTTP 200: Status file exists, parse JSON and evaluate errors</li>
+                    <li>HTTP 403/500: Retry with exponential backoff</li>
+                </ul>
+            </li>
+            <li>If errors detected, apply threshold logic to determine if user notification is warranted</li>
+        </ol>
+
+        <div class="subsection-title">4.7 Adaptive Polling Intervals</div>
+        <p>
+            The system implements intelligent polling interval adjustment based on application state:
+        </p>
+        <ul>
+            <li><strong>Standard Operation:</strong> 30-60 second intervals during normal browsing</li>
+            <li><strong>Error Detection:</strong> 15-20 second intervals after detecting errors, to monitor resolution</li>
+            <li><strong>User Inactivity:</strong> 120+ second intervals when no user interaction detected, conserving resources</li>
+            <li><strong>Error Resolution:</strong> Gradual return to standard intervals after error file deletion or status improvement</li>
+        </ul>
+
+        <div class="subsection-title">4.8 User Notification Triggering</div>
+        <p>
+            Upon detecting errors that meet notification criteria, the system presents a user interface element requesting additional information or session recording. Notification criteria include:
+        </p>
+        <ul>
+            <li>Error count exceeding threshold (e.g., 2+ errors within 5-minute window)</li>
+            <li>Presence of errors classified as "critical" severity</li>
+            <li>Specific error types known to benefit from user-provided context</li>
+            <li>First-time notification flag to prevent repeated interruptions for the same error session</li>
+        </ul>
+
+        <div class="subsection-title">4.9 Privacy and Security Mechanisms</div>
+        <p>
+            The system implements multiple privacy and security controls:
+        </p>
+        <ul>
+            <li><strong>Session Identifier Pseudonymization:</strong> Session IDs are cryptographically random and contain no personally identifiable information</li>
+            <li><strong>Error Body Encryption:</strong> Sensitive error response data is encrypted before storage using industry-standard encryption algorithms</li>
+            <li><strong>Automatic Data Deletion:</strong> Lifecycle policies ensure session status files are deleted after TTL expiration, implementing data minimization principles</li>
+            <li><strong>Access Control:</strong> Object storage bucket permissions restrict write access to authenticated pipeline services and read access to authorized application origins</li>
+            <li><strong>CORS Enforcement:</strong> Cross-origin resource sharing policies prevent unauthorized domains from accessing status files</li>
+        </ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section">
+        <div class="section-title">5. Claims</div>
+
+        <div class="claim">
+            <span class="claim-number">1.</span>
+            A method for proactive error detection and user notification in web-based applications, comprising:
+            <ol style="list-style-type: lower-alpha;">
+                <li>capturing critical application errors from a logging infrastructure;</li>
+                <li>aggregating said errors by session identifier;</li>
+                <li>generating a session-specific status file containing structured error data;</li>
+                <li>writing said status file to an object storage system;</li>
+                <li>periodically polling said object storage system from a client-side library using said session identifier;</li>
+                <li>evaluating presence and severity of errors indicated in said status file;</li>
+                <li>automatically presenting a user interface notification when error thresholds are exceeded.</li>
+            </ol>
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">2.</span>
+            The method of claim 1, wherein said session identifier is generated by said client-side library and persisted in browser storage.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">3.</span>
+            The method of claim 1, wherein said status file is created only when errors are present, and absence of said status file indicates a healthy session state.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">4.</span>
+            The method of claim 1, wherein said object storage system implements automatic lifecycle policies to delete said status file after a predetermined time-to-live period.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">5.</span>
+            The method of claim 1, wherein said polling occurs at intervals between 15 and 120 seconds, adjusted based on error detection state and user activity level.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">6.</span>
+            The method of claim 1, wherein said critical application errors are identified based on at least one of: HTTP status codes, endpoint URL patterns, error type classifications, and business logic rules.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">7.</span>
+            The method of claim 1, wherein said status file contains encrypted error response bodies when said errors include sensitive data.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">8.</span>
+            The method of claim 1, wherein said client-side library operates without modifying native browser APIs or injecting code into application execution flow.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">9.</span>
+            The method of claim 1, wherein said user interface notification requests user permission to record session activity or provide additional error context.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">10.</span>
+            A system for proactive error detection and user notification in web-based applications, comprising:
+            <ol style="list-style-type: lower-alpha;">
+                <li>a logging pipeline service configured to:
+                    <ul style="list-style-type: lower-roman;">
+                        <li>receive error events from application logging infrastructure;</li>
+                        <li>filter errors based on criticality criteria;</li>
+                        <li>aggregate errors by session identifier;</li>
+                        <li>generate session-specific status files in JSON format;</li>
+                        <li>write said status files to object storage;</li>
+                    </ul>
+                </li>
+                <li>an object storage system configured to:
+                    <ul style="list-style-type: lower-roman;">
+                        <li>store session-specific status files;</li>
+                        <li>provide read-only access to client applications via CORS-enabled HTTP requests;</li>
+                        <li>automatically delete status files after time-to-live expiration;</li>
+                    </ul>
+                </li>
+                <li>a client-side JavaScript library configured to:
+                    <ul style="list-style-type: lower-roman;">
+                        <li>generate unique session identifiers;</li>
+                        <li>periodically fetch session-specific status files from said object storage system;</li>
+                        <li>parse error data from said status files;</li>
+                        <li>evaluate error severity and frequency against notification thresholds;</li>
+                        <li>render user interface notifications when thresholds are exceeded.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">11.</span>
+            The system of claim 10, wherein said object storage system is selected from the group consisting of: Minio, Amazon S3, Google Cloud Storage, Azure Blob Storage, and compatible object storage implementations.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">12.</span>
+            The system of claim 10, wherein said logging pipeline service implements deduplication logic to prevent redundant error entries for identical errors within a time window.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">13.</span>
+            The system of claim 10, wherein said client-side library adjusts polling frequency based on user activity detection, reducing polling during inactivity periods.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">14.</span>
+            The system of claim 10, wherein said status files have a time-to-live period configurable between 4 and 72 hours.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">15.</span>
+            The system of claim 10, further comprising an encryption mechanism that encrypts error response bodies before storage in said object storage system.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">16.</span>
+            A non-transitory computer-readable storage medium containing instructions that, when executed by a processor, cause a web browser to:
+            <ol style="list-style-type: lower-alpha;">
+                <li>generate a unique session identifier upon page load;</li>
+                <li>store said session identifier in browser storage;</li>
+                <li>construct an object storage URL incorporating said session identifier;</li>
+                <li>initiate periodic HTTP GET requests to said object storage URL;</li>
+                <li>upon receiving HTTP 404 responses, conclude no errors are present and continue polling;</li>
+                <li>upon receiving HTTP 200 responses:
+                    <ul style="list-style-type: lower-roman;">
+                        <li>parse JSON-formatted error data from response body;</li>
+                        <li>evaluate error count and severity;</li>
+                        <li>determine if notification thresholds are exceeded;</li>
+                        <li>when thresholds are exceeded, render a user interface element requesting error reporting or session recording;</li>
+                    </ul>
+                </li>
+                <li>adjust polling interval based on error detection state and user activity level.</li>
+            </ol>
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">17.</span>
+            The computer-readable storage medium of claim 16, wherein said instructions further cause said web browser to implement exponential backoff retry logic when encountering HTTP error responses from said object storage.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">18.</span>
+            The computer-readable storage medium of claim 16, wherein said notification threshold requires at least two critical errors within a five-minute window before triggering user notification.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">19.</span>
+            The computer-readable storage medium of claim 16, wherein said instructions further cause said web browser to track notification display history and prevent repeated notifications for the same error session.
+        </div>
+
+        <div class="claim">
+            <span class="claim-number">20.</span>
+            A method for minimizing backend infrastructure load while maintaining proactive error monitoring in distributed web applications, comprising:
+            <ol style="list-style-type: lower-alpha;">
+                <li>decoupling error status querying from application backend infrastructure by interposing an object storage layer;</li>
+                <li>implementing a write-only-on-error pattern wherein status files are created exclusively when errors occur;</li>
+                <li>utilizing HTTP 404 responses as positive indicators of healthy system state;</li>
+                <li>configuring automatic file deletion via object storage lifecycle policies;</li>
+                <li>thereby achieving scalable error monitoring capable of supporting thousands of concurrent client sessions without imposing database query load or application server processing overhead on said backend infrastructure.</li>
+            </ol>
+        </div>
+
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section">
+        <div class="section-title">6. Advantages and Benefits</div>
+
+        <div class="subsection-title">6.1 Technical Advantages</div>
+        <ul>
+            <li><strong>Zero Backend Impact:</strong> Status polling imposes no load on application databases or API servers, as requests are served by object storage infrastructure optimized for high-concurrency read operations.</li>
+            <li><strong>Independent Failure Domain:</strong> The monitoring system operates independently of application backend availability, enabling error detection even during backend outages or degradation.</li>
+            <li><strong>Linear Scalability:</strong> Object storage systems scale horizontally to support millions of concurrent requests, eliminating traditional polling scalability constraints.</li>
+            <li><strong>Low Latency:</strong> Static file serving from object storage typically achieves sub-100ms response times, significantly faster than API-based status checking.</li>
+            <li><strong>Simplified Infrastructure:</strong> The system requires no additional backend APIs, WebSocket servers, or real-time messaging infrastructure.</li>
+            <li><strong>Automatic Cleanup:</strong> Lifecycle policies eliminate manual status file management and prevent storage accumulation.</li>
+        </ul>
+
+        <div class="subsection-title">6.2 User Experience Benefits</div>
+        <ul>
+            <li><strong>Proactive Assistance:</strong> Users receive error reporting prompts without manual intervention, improving issue detection and resolution speed.</li>
+            <li><strong>Reduced Friction:</strong> Automatic notification eliminates the need for users to discover and navigate to error reporting interfaces.</li>
+            <li><strong>Context Preservation:</strong> Error detection occurs while users are still engaged with the application, enabling immediate session recording or feedback capture.</li>
+            <li><strong>Threshold-Based Alerting:</strong> Intelligent filtering prevents alert fatigue by notifying users only when meaningful error patterns are detected.</li>
+        </ul>
+
+        <div class="subsection-title">6.3 Business Benefits</div>
+        <ul>
+            <li><strong>Cost Efficiency:</strong> Object storage costs significantly less than equivalent compute resources for API-based polling.</li>
+            <li><strong>Faster Issue Resolution:</strong> Proactive error detection reduces mean time to detection (MTTD) and mean time to resolution (MTTR).</li>
+            <li><strong>Improved Data Quality:</strong> Automatic notification increases error report volume and quality, enhancing debugging capabilities.</li>
+            <li><strong>Infrastructure Simplification:</strong> Reduced dependency on complex real-time messaging infrastructure lowers operational complexity.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title">7. Implementation Variations</div>
+
+        <div class="subsection-title">7.1 Alternative Object Storage Backends</div>
+        <p>
+            While the preferred embodiment utilizes Minio for object storage, the system is compatible with any S3-compatible object storage implementation including Amazon S3, Google Cloud Storage, Azure Blob Storage, DigitalOcean Spaces, Wasabi, and Backblaze B2. The system may be adapted for non-S3-compatible storage systems by modifying the client-side library's HTTP request formatting.
+        </p>
+
+        <div class="subsection-title">7.2 Hybrid Polling Strategies</div>
+        <p>
+            Alternative embodiments may combine object storage polling with complementary approaches:
+        </p>
+        <ul>
+            <li><strong>WebSocket Fallback:</strong> For time-critical errors, the system may establish WebSocket connections for push notification while maintaining object storage polling as a backup mechanism.</li>
+            <li><strong>Server-Sent Events (SSE) Hybrid:</strong> SSE connections may supplement polling for real-time updates, with object storage providing persistence and reliability.</li>
+            <li><strong>CDN Integration:</strong> Content delivery networks may cache status files for improved geographic distribution and reduced latency.</li>
+        </ul>
+
+        <div class="subsection-title">7.3 Enhanced Security Implementations</div>
+        <p>
+            Security-conscious deployments may implement additional protection mechanisms:
+        </p>
+        <ul>
+            <li><strong>Signed URLs:</strong> Temporary, cryptographically signed URLs with expiration timestamps for time-limited access to status files.</li>
+            <li><strong>Client-Side Decryption:</strong> Encrypted status file contents with decryption keys managed by the client-side library.</li>
+            <li><strong>Authentication Requirements:</strong> Object storage bucket access restricted to authenticated users with valid session tokens.</li>
+        </ul>
+
+        <div class="subsection-title">7.4 Multi-Region Deployments</div>
+        <p>
+            For global applications, the system may be deployed across multiple geographic regions with regional object storage buckets and latency-based routing. The logging pipeline writes to multiple regional buckets, and the client-side library selects the nearest bucket based on geographic proximity or measured latency.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">8. Example Use Cases</div>
+
+        <div class="subsection-title">8.1 E-Commerce Checkout Failures</div>
+        <p>
+            An online retailer experiences intermittent payment gateway errors during peak traffic. The system detects failed payment API calls, aggregates them by session, and writes status files to object storage. Customer browsers polling for status detect the payment failures and automatically present a dialog: "We noticed a problem processing your payment. Would you like to share details to help us fix this?" The customer opts in, enabling session recording that captures the exact error sequence, leading to rapid diagnosis and resolution.
+        </p>
+
+        <div class="subsection-title">8.2 Authentication Service Degradation</div>
+        <p>
+            A SaaS platform's authentication service experiences performance degradation affecting login attempts. The logging pipeline detects authentication timeout errors and creates session status files. Users experiencing login failures receive proactive notifications asking if they would like to report the issue, even though their browser session has not yet successfully authenticated. This enables early detection of authentication problems that might otherwise go unreported.
+        </p>
+
+        <div class="subsection-title">8.3 API Rate Limiting</div>
+        <p>
+            A data analytics application encounters API rate limiting errors when processing large datasets. The system detects HTTP 429 responses, aggregates them by session, and notifies affected users. The notification explains the rate limit situation and offers options to reduce query frequency or upgrade to higher rate limits. This proactive communication transforms a potential negative user experience into an upgrade opportunity.
+        </p>
+
+        <div class="subsection-title">8.4 Third-Party Service Outages</div>
+        <p>
+            An application integrates with multiple third-party services (mapping, weather, financial data). When one third-party service experiences an outage, the system detects API failures, notifies affected users, and offers alternative workflows or degraded functionality modes. This transparent communication maintains user trust during external service disruptions.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">9. Comparative Analysis</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Approach</th>
+                    <th>Backend Load</th>
+                    <th>Latency</th>
+                    <th>Scalability</th>
+                    <th>Infrastructure Complexity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Traditional API Polling</strong></td>
+                    <td>High (DB queries)</td>
+                    <td>200-500ms</td>
+                    <td>Limited</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td><strong>WebSocket/SSE</strong></td>
+                    <td>Medium (connections)</td>
+                    <td>1-50ms</td>
+                    <td>Medium</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td><strong>Client-Side Only</strong></td>
+                    <td>None</td>
+                    <td>0ms</td>
+                    <td>Unlimited</td>
+                    <td>Low</td>
+                </tr>
+                <tr>
+                    <td><strong>Object Storage Polling (Invention)</strong></td>
+                    <td>None</td>
+                    <td>50-100ms</td>
+                    <td>Very High</td>
+                    <td>Low</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            The comparative analysis demonstrates that the present invention uniquely combines zero backend load with low latency, high scalability, and low infrastructure complexity—a combination not achieved by existing approaches.
+        </p>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section">
+        <div class="section-title">10. Drawings and Figures</div>
+
+        <div class="subsection-title">Figure 1: System Architecture Diagram</div>
+        <p class="no-indent">
+            [A detailed architectural diagram would be included showing the flow from Application → Logging Infrastructure → Logging Pipeline → Object Storage → Client Browser → User Notification, with bidirectional arrows and component labels]
+        </p>
+
+        <div class="subsection-title">Figure 2: Session Status File Structure</div>
+        <p class="no-indent">
+            [A diagram illustrating the JSON schema for session status files, showing nested objects for errors, metadata fields, and encryption indicators]
+        </p>
+
+        <div class="subsection-title">Figure 3: Polling State Machine</div>
+        <p class="no-indent">
+            [A state diagram showing transitions between: Initial Load → Standard Polling → Error Detected → High-Frequency Polling → User Notified → Error Resolved → Standard Polling]
+        </p>
+
+        <div class="subsection-title">Figure 4: Lifecycle Management Flow</div>
+        <p class="no-indent">
+            [A timeline diagram showing: Status File Creation → Active Period (4-72 hours) → Automatic Deletion, with annotations for TTL policies and cleanup triggers]
+        </p>
+
+        <div class="subsection-title">Figure 5: User Notification Interface</div>
+        <p class="no-indent">
+            [Screenshots or wireframes showing the user interface element presented when errors are detected, including options to accept, dismiss, or configure notification preferences]
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">11. Conclusion</div>
+        <p>
+            The present invention addresses long-standing challenges in web application error monitoring by introducing a novel architecture that leverages object storage as a lightweight, scalable intermediary between error logging systems and client-side monitoring. By decoupling status checking from application backend infrastructure, implementing a write-only-on-error pattern, and utilizing automatic lifecycle management, the system achieves proactive error detection with minimal performance impact and operational complexity.
+        </p>
+        <p>
+            The invention's combination of scalability, performance, simplicity, and proactive user engagement represents a significant advancement over existing error monitoring and notification approaches. Its compatibility with existing logging infrastructure, minimal integration requirements, and independence from application backend availability make it particularly well-suited for modern distributed web applications operating at scale.
+        </p>
+        <p>
+            While specific embodiments have been described in detail, those skilled in the art will recognize that various modifications, extensions, and alternatives are possible without departing from the scope and spirit of the invention as defined by the appended claims.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p><strong>Patent Application Document</strong></p>
+        <p>System and Method for Proactive Error Detection and User Notification</p>
+        <p>Using Object Storage-Based Session Status Monitoring</p>
+        <p style="margin-top: 15px; font-size: 9pt;">
+            This document is a draft patent application prepared for informational purposes.<br>
+            Consultation with a patent attorney is recommended before filing.
+        </p>
+    </div>
+
+</body>
+</html>

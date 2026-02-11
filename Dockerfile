@@ -12,12 +12,13 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir --only-binary=:all: -r requirements.txt || \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy application file
+# Copy application files
 COPY main.py .
+COPY enhance_patent.py .
 COPY test_llm_proxy.py .
 
-# Create output directory
-RUN mkdir -p /app/output
+# Create output and input directories
+RUN mkdir -p /app/output /app/input
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
