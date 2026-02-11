@@ -1,6 +1,7 @@
 from crewai import Agent, Task, Crew, Process
 from crewai.tools import tool
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool
+from langchain_openai import ChatOpenAI
 from datetime import datetime
 import os
 import json
@@ -196,6 +197,19 @@ def human_approval_check(patent_data: dict, iteration: int = 1) -> dict:
             print("Invalid choice. Please enter 1, 2, or 3.")
 
 # ============================================================================
+# CONFIGURE LLM - Using GPT-5-mini via llm-proxy
+# ============================================================================
+
+# Initialize the LLM with GPT-5-mini (most powerful model)
+llm = ChatOpenAI(
+    model="gpt-5-mini",
+    base_url=os.getenv("OPENAI_API_BASE", "http://llm-proxy.ceui.cnap.comcast.net/v1"),
+    api_key=os.getenv("OPENAI_API_KEY", "dummy-key-not-needed"),
+    temperature=0.7,
+    max_tokens=2000
+)
+
+# ============================================================================
 # AGENTS DEFINITION
 # ============================================================================
 
@@ -208,6 +222,7 @@ prior_art_researcher = Agent(
     You identify similar inventions and their key differences.
     You always provide specific patent numbers and classification codes.''',
     tools=[uspto_search, google_patents_search, search_tool, scrape_tool],
+    llm=llm,
     verbose=True
 )
 
@@ -218,6 +233,7 @@ tech_analyzer = Agent(
     backstory='''Senior engineer who understands technical details deeply.
     You break down inventions into components, methods, and systems.
     You identify the technical problem solved and the solution provided.''',
+    llm=llm,
     verbose=True
 )
 
@@ -228,6 +244,7 @@ novelty_assessor = Agent(
     backstory='''Patent examiner with expertise in determining novelty.
     You compare the invention against prior art to identify unique aspects.
     You understand the "non-obvious" requirement for patentability.''',
+    llm=llm,
     verbose=True
 )
 
@@ -239,6 +256,7 @@ claims_writer = Agent(
     You write independent and dependent claims that are broad yet specific.
     You use proper legal language and structure for USPTO requirements.
     You can refine claims based on feedback.''',
+    llm=llm,
     verbose=True
 )
 
@@ -250,6 +268,7 @@ description_writer = Agent(
     You write clear, detailed descriptions with proper sections:
     background, summary, detailed description, and drawings descriptions.
     You can revise based on reviewer feedback.''',
+    llm=llm,
     verbose=True
 )
 
@@ -261,6 +280,7 @@ reviewer = Agent(
     You ensure all USPTO requirements are met, claims are defensible,
     and the specification fully supports the claims.
     You provide detailed, actionable feedback for revisions.''',
+    llm=llm,
     verbose=True
 )
 
