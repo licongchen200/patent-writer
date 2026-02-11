@@ -4,9 +4,6 @@
 crewai>=0.28.0
 crewai-tools>=0.2.0
 
-# Document Generation
-python-docx>=1.0.0
-
 # Web Search & Scraping (required for SerperDevTool)
 # Note: Set SERPER_API_KEY environment variable
 # Get free API key at: https://serper.dev

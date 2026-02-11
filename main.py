@@ -1,9 +1,6 @@
 from crewai import Agent, Task, Crew, Process
 from crewai.tools import tool
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool
-from docx import Document
-from docx.shared import Inches, Pt
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 from datetime import datetime
 import os
 import json
@@ -34,70 +31,106 @@ scrape_tool = ScrapeWebsiteTool()
 # DOCUMENT EXPORT FUNCTION
 # ============================================================================
 
-def export_to_docx(patent_data: dict, filename: str = "patent_application.docx"):
-    """Export patent application to a properly formatted .docx file.
+def export_to_markdown(patent_data: dict, filename: str = "patent_application.md"):
+    """Export patent application to a properly formatted Markdown file.
     
     Args:
         patent_data: Dictionary containing all patent sections
         filename: Output filename
     """
-    doc = Document()
-    
-    # Title
-    title = doc.add_heading(patent_data.get('title', 'PATENT APPLICATION'), 0)
-    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
-    # Metadata
-    doc.add_paragraph(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    doc.add_paragraph("=" * 80)
-    doc.add_paragraph()
-    
-    # Abstract
-    doc.add_heading('ABSTRACT', 1)
-    doc.add_paragraph(patent_data.get('abstract', ''))
-    doc.add_page_break()
-    
-    # Field of Invention
-    doc.add_heading('FIELD OF THE INVENTION', 1)
-    doc.add_paragraph(patent_data.get('field', ''))
-    doc.add_paragraph()
-    
-    # Background
-    doc.add_heading('BACKGROUND OF THE INVENTION', 1)
-    doc.add_paragraph(patent_data.get('background', ''))
-    doc.add_paragraph()
-    
-    # Prior Art
-    doc.add_heading('PRIOR ART ANALYSIS', 1)
-    doc.add_paragraph(patent_data.get('prior_art', ''))
-    doc.add_paragraph()
-    
-    # Summary
-    doc.add_heading('SUMMARY OF THE INVENTION', 1)
-    doc.add_paragraph(patent_data.get('summary', ''))
-    doc.add_paragraph()
-    
-    # Detailed Description
-    doc.add_heading('DETAILED DESCRIPTION', 1)
-    doc.add_paragraph(patent_data.get('detailed_description', ''))
-    doc.add_page_break()
-    
-    # Claims
-    doc.add_heading('CLAIMS', 1)
-    claims_text = patent_data.get('claims', '')
-    doc.add_paragraph(claims_text)
-    doc.add_page_break()
-    
-    # Review Comments
-    if patent_data.get('review_comments'):
-        doc.add_heading('REVIEW COMMENTS AND RECOMMENDATIONS', 1)
-        doc.add_paragraph(patent_data.get('review_comments', ''))
-    
-    # Save document
     output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)
     filepath = os.path.join(output_dir, filename)
-    doc.save(filepath)
+    
+    # Build markdown content
+    md_content = []
+    
+    # Title
+    title = patent_data.get('title', 'PATENT APPLICATION')
+    md_content.append(f"# {title}")
+    md_content.append("")
+    
+    # Metadata
+    md_content.append("---")
+    md_content.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    md_content.append("---")
+    md_content.append("")
+    
+    # Table of Contents
+    md_content.append("## Table of Contents")
+    md_content.append("")
+    md_content.append("1. [Abstract](#abstract)")
+    md_content.append("2. [Field of the Invention](#field-of-the-invention)")
+    md_content.append("3. [Background of the Invention](#background-of-the-invention)")
+    md_content.append("4. [Prior Art Analysis](#prior-art-analysis)")
+    md_content.append("5. [Summary of the Invention](#summary-of-the-invention)")
+    md_content.append("6. [Detailed Description](#detailed-description)")
+    md_content.append("7. [Claims](#claims)")
+    if patent_data.get('review_comments'):
+        md_content.append("8. [Review Comments and Recommendations](#review-comments-and-recommendations)")
+    md_content.append("")
+    md_content.append("---")
+    md_content.append("")
+    
+    # Abstract
+    md_content.append("## Abstract")
+    md_content.append("")
+    md_content.append(patent_data.get('abstract', ''))
+    md_content.append("")
+    md_content.append("---")
+    md_content.append("")
+    
+    # Field of Invention
+    md_content.append("## Field of the Invention")
+    md_content.append("")
+    md_content.append(patent_data.get('field', ''))
+    md_content.append("")
+    
+    # Background
+    md_content.append("## Background of the Invention")
+    md_content.append("")
+    md_content.append(patent_data.get('background', ''))
+    md_content.append("")
+    
+    # Prior Art
+    md_content.append("## Prior Art Analysis")
+    md_content.append("")
+    md_content.append(patent_data.get('prior_art', ''))
+    md_content.append("")
+    
+    # Summary
+    md_content.append("## Summary of the Invention")
+    md_content.append("")
+    md_content.append(patent_data.get('summary', ''))
+    md_content.append("")
+    
+    # Detailed Description
+    md_content.append("## Detailed Description")
+    md_content.append("")
+    md_content.append(patent_data.get('detailed_description', ''))
+    md_content.append("")
+    md_content.append("---")
+    md_content.append("")
+    
+    # Claims
+    md_content.append("## Claims")
+    md_content.append("")
+    md_content.append(patent_data.get('claims', ''))
+    md_content.append("")
+    md_content.append("---")
+    md_content.append("")
+    
+    # Review Comments
+    if patent_data.get('review_comments'):
+        md_content.append("## Review Comments and Recommendations")
+        md_content.append("")
+        md_content.append(patent_data.get('review_comments', ''))
+        md_content.append("")
+    
+    # Write to file
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(md_content))
+    
     print(f"\n✓ Patent application exported to: {filepath}")
     return filepath
 
@@ -403,7 +436,7 @@ def run_patent_generation(invention_description: str, max_iterations: int = 3):
         }
         
         # Export to DOCX
-        docx_file = export_to_docx(structured_data, f"patent_application_iter_{iteration}.docx")
+        md_file = export_to_markdown(structured_data, f"patent_application_iter_{iteration}.md")
         
         print(f"\n{'='*80}")
         print(f"Iteration {iteration} Complete!")
