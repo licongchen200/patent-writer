@@ -1,5 +1,6 @@
 from crewai import Agent, Task, Crew, Process
-from crewai_tools import SerperDevTool, ScrapeWebsiteTool, BaseTool
+from crewai.tools import tool
+from crewai_tools import SerperDevTool, ScrapeWebsiteTool
 from docx import Document
 from docx.shared import Inches, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -11,29 +12,19 @@ import json
 # CUSTOM TOOLS FOR PATENT SEARCH
 # ============================================================================
 
-class USPTOSearchTool(BaseTool):
-    name: str = "USPTO Search Tool"
-    description: str = "Search USPTO patent database for relevant patents."
-    
-    def _run(self, query: str) -> str:
-        """Search USPTO patent database."""
-        search_tool = SerperDevTool()
-        results = search_tool.run(f"site:uspto.gov OR site:patents.google.com {query}")
-        return f"USPTO Search Results for '{query}':\n{results}"
+@tool("USPTO Search Tool")
+def uspto_search(query: str) -> str:
+    """Search USPTO patent database for relevant patents."""
+    search_tool = SerperDevTool()
+    results = search_tool.run(f"site:uspto.gov OR site:patents.google.com {query}")
+    return f"USPTO Search Results for '{query}':\n{results}"
 
-class GooglePatentsSearchTool(BaseTool):
-    name: str = "Google Patents Search Tool"
-    description: str = "Search Google Patents for prior art and related patents."
-    
-    def _run(self, query: str) -> str:
-        """Search Google Patents."""
-        search_tool = SerperDevTool()
-        results = search_tool.run(f"site:patents.google.com {query}")
-        return f"Google Patents Search Results:\n{results}"
-
-# Instantiate custom tools
-uspto_search = USPTOSearchTool()
-google_patents_search = GooglePatentsSearchTool()
+@tool("Google Patents Search Tool")
+def google_patents_search(query: str) -> str:
+    """Search Google Patents for prior art and related patents."""
+    search_tool = SerperDevTool()
+    results = search_tool.run(f"site:patents.google.com {query}")
+    return f"Google Patents Search Results:\n{results}"
 
 # Standard tools
 search_tool = SerperDevTool()
